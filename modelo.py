@@ -1,10 +1,57 @@
-from gurobipy import Model, GRB, quicksum, gp
+#from gurobipy import Model, GRB, quicksum, gp
+import pandas as pd
+
+
+def cargar_parametro_con_J(csv_filename, columnabuscada ,J_depositos):
+    P_dict = {}
+    try:
+        # Cargar el dataframe
+        df = pd.read_csv(csv_filename)
+        
+        # 1. Verificar que el J coincida con las filas
+        if len(df) != J_depositos:
+            print(f"¡Advertencia! Tu J={J_depositos} no coincide con las {len(df)} filas del CSV.")
+            print(f"Se usará el número de filas del CSV: {len(df)}")
+            J_depositos = len(df) # Ajusta J al tamaño real del archivo
+
+        print(f"CSV '{csv_filename}' cargado. J={J_depositos} coincide con las {len(df)} filas.")
+
+        # 2. Seleccionar la columna
+        if columnabuscada not in df.columns:
+            print(f"Error Crítico: La columna '{columnabuscada}' no se encontró en el archivo.")
+            return {}
+
+        # 3. Extraer, limpiar (reemplazar NaNs por 0) y convertir a kg
+        print(f"Limpiando {df[columnabuscada].isna().sum()} valores nulos en '{columnabuscada}' y convirtiendo a kg.")
+        if columnabuscada == 'TONELAJE_AUTORIZADO':
+            valores_P = df[columnabuscada].fillna(0) * 1000
+        else:
+            valores_P = df[columnabuscada].fillna(0)
+
+        # 4. Convertir a lista
+        lista_valores_P = valores_P.tolist()
+        
+        # 5. Crear el diccionario con llaves de 1 a J
+        # Gurobi usará P[j] donde j está en range(1, J+1)
+        # El diccionario mapea {1 -> fila 0, 2 -> fila 1, ...}
+        P_dict = {j: lista_valores_P[j-1] for j in range(1, J_depositos + 1)}
+        
+        print("Diccionario P[j] creado exitosamente.")
+        return P_dict
+
+    except FileNotFoundError:
+        print(f"Error Crítico: No se pudo encontrar el archivo '{csv_filename}'.")
+        return {}
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return {}
+
 
 ### Conjuntos
-I =  166                            # Número de minas
-J = 352                             # Número de depósitos de relaves
+I =  157                            # Número de minas
+J = 310                             # Número de depósitos de relaves
 K = 0                              # Número de procesos mineros
-L = 14                              # Número de tipos de mineral 
+L = 15                              # Número de tipos de mineral 
 
 Minas = range(1, I+1)              # I
 Deposito_relaves = range(1, J+1)   # J
@@ -13,8 +60,10 @@ Tiempo_meses = range(1, 13)        # T (horizonte de 12 meses)
 Mineral = range(1, L+1)            # L
 
 ### Parámetros
-P = []
-v = []
+nombre_archivo = "Filtradas activas inactivas.csv"
+P = cargar_parametro_con_J(nombre_archivo,'TONELAJE_AUTORIZADO', J)
+v = cargar_parametro_con_J(nombre_archivo,'VOL_AUTORIZADO', J)
+e = []
 A = []
 d = []
 a = []
@@ -23,7 +72,6 @@ r = []
 delta = []
 f = []
 rho = []
-e = []
 c = 0.0
 g = []
 h = 0.0
@@ -32,7 +80,7 @@ q = []
 
 
 ### Modelo
-
+'''
 m = gp.Model("Modelo_Proyecto_Minero")
 
 #### Variables (la naturaleza se define acá) (lb=lower bound, vtype=variable type)
@@ -80,3 +128,4 @@ m.addConstr(
 )
 # Cota máxima para los desechos acumulados
 m.addConstrs(u[i,t] <= q[i] for i in Minas for t in Tiempo_meses)
+'''
