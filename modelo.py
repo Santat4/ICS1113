@@ -1,10 +1,10 @@
 from gurobipy import Model, GRB, quicksum, gp
 
 ### Conjuntos
-I = 0                              # Número de minas
-J = 0                              # Número de depósitos de relaves
+I =  166                            # Número de minas
+J = 352                             # Número de depósitos de relaves
 K = 0                              # Número de procesos mineros
-L = 0                              # Número de tipos de mineral
+L = 14                              # Número de tipos de mineral 
 
 Minas = range(1, I+1)              # I
 Deposito_relaves = range(1, J+1)   # J
@@ -13,8 +13,21 @@ Tiempo_meses = range(1, 13)        # T (horizonte de 12 meses)
 Mineral = range(1, L+1)            # L
 
 ### Parámetros
-r = [] # Costo operativo de cada depósito de relaves
 P = []
+v = []
+A = []
+d = []
+a = []
+b = 0.0
+r = []
+delta = []
+f = []
+rho = []
+e = []
+c = 0.0
+g = []
+h = 0.0
+q = []
 # ... (rellenar)
 
 
@@ -28,7 +41,7 @@ y  = m.addVars(Minas, Deposito_relaves, Tiempo_meses, lb=0.0, vtype=GRB.CONTINUO
 z  = m.addVars(Minas, Proceso_minero, Mineral, Tiempo_meses,  lb=0.0, vtype=GRB.CONTINUOUS, name="z")      # z_{iklt}
 u  = m.addVars(Minas, Tiempo_meses, lb=0.0, vtype=GRB.CONTINUOUS, name="u")                                # u_{it}
 w  = m.addVars(Deposito_relaves, vtype=GRB.BINARY, name="w")                                               # w_{j}
-v  = m.addVars(Proceso_minero, Tiempo_meses, vtype=GRB.BINARY, name="v")                                   # v_{kt}
+V  = m.addVars(Proceso_minero, Tiempo_meses, vtype=GRB.BINARY, name="V")                                   # v_{jt}
 
 #### Función Objetivo
 m.setObjective(
@@ -42,7 +55,7 @@ m.setObjective(
 # No sobrepasar peso máximo de relaves
 m.addConstrs(quicksum(y[i,j,t] for i in Minas for t in Tiempo_meses) <= P[j] for j in Deposito_relaves)  
 # No se debe sobrepasar volumen máximo permitido de relave
-m.addConstrs(quicksum(y[i,j,t] * e[j] for i in Minas for t in Tiempo_meses) <= V_max[j] for j in Deposito_relaves)
+m.addConstrs(quicksum(y[i,j,t] * e[j] for i in Minas for t in Tiempo_meses) <= v[j] for j in Deposito_relaves)
 # Se tien que hacer una inspeccion anual en el deposito
 m.addConstrs(quicksum(V[j,t] for t in Tiempo_meses) == 1 for j in Deposito_relaves)
 # Se debe usar menos del 10% de agua continental producida
@@ -54,7 +67,7 @@ m.addConstrs(quicksum(x[i,k,l,t] for i in Minas) >= quicksum(a[k,l] * z[i,k,l,t]
 # Cada mina no puede superar una cantidad máxima de agua disponible
 m.addConstrs(quicksum(x[i,k,l,t] for k in Proceso_minero for l in Mineral for t in Tiempo_meses) <= A[i] for i in Minas)
 # Si el deposito está inactivo, no se puede depositar material en él
-m.addConstrs(quicksum(y[i,j,t] for i in Minas) <= M * w[j] for j in Deposito_relaves for t in Tiempo_meses)
+m.addConstrs(quicksum(y[i,j,t] for i in Minas) <= P[j] * w[j] for j in Deposito_relaves for t in Tiempo_meses)
 # Al procesar mineral, se genera relave, este puede transportarse hacia un deposito o quedarse en la mina
 m.addConstrs(u[i,t] + quicksum(y[i,j,t] for j in Deposito_relaves) == u[i-1] + quicksum(rho[k,l] * z[i,k,l,t] for k in Proceso_minero for l in Mineral) for i in Minas for t in Tiempo_meses)
 m.addConstrs(u[i,0] == 0 for i in Minas)  # Condición inicial de relaves en minas
@@ -67,5 +80,3 @@ m.addConstr(
 )
 # Cota máxima para los desechos acumulados
 m.addConstrs(u[i,t] <= q[i] for i in Minas for t in Tiempo_meses)
-# Existe urgenia por inspeccionar relaves con exposicion a alta pluviometria
-m.addConstrs(quicksum(V[j,t] for t in Tiempo_meses[:T//2]) >= 1 for j in Deposito_relaves | r[j] >= rcrit) # Modificar probablemente
