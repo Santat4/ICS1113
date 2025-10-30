@@ -213,6 +213,7 @@ m.addConstr(
 m.addConstrs(u[i,t] <= q[i] for i in Minas for t in Tiempo_meses)
 
 # Optimizar el modelo
+m.setParam('TimeLimit', 60 * 30)  # Limitar el tiempo de ejecución a 30 minutos
 m.optimize()
 elapsed_time = m.Runtime
 optimal_value = m.ObjVal
