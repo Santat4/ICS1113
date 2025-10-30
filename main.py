@@ -48,10 +48,10 @@ def cargar_parametro_con_J(csv_filename, columnabuscada ,J_depositos):
 
 
 ### Conjuntos
-I =  157                            # Número de minas
-J = 310                             # Número de depósitos de relaves
+I =  123                            # Número de minas
+J = 233                             # Número de depósitos de relaves
 K = 4                               # Número de procesamiento mineros (Flotacion, Lixiviación, gravimetrico, Magnetico)
-L = 6                               # Número de tipos de mineral (oro, plata, cobre, caliza, molibdeno, Hierro)
+L = 6                               # Número de tipos de mineral (oro, cobre, zinc, siliceo, caliza, hierro)
 
 Minas = range(1, I+1)              # I
 Deposito_relaves = range(1, J+1)   # J
@@ -67,9 +67,9 @@ v = cargar_parametro_con_J(nombre_archivo,'VOL_AUTORIZADO', J)
 # https://www.sernageomin.cl/pdf/anuario/Anuario_de_la_mineria_de_chile_2023_web.pdf
 demanda_anual_kg = {
     1: 5372694 * 1000,   # Cobre
-    2: 1262287,           # Plata
+    2: 22059 * 1000,     # Zinc
     3: 35790,             # Oro
-    4: 44127 * 1000,      # Molibdeno
+    4: 1471367 * 1000,    # siliceo
     5: 5250584 * 1000,    # Caliza
     6: 11443370 * 1000    # Hierro
 }
@@ -83,7 +83,17 @@ h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente 
 e = 0.00071 # https://www.sernageomin.cl/wp-content/uploads/2023/03/PÚBLICA_GeoquimicaRelavesChile23032023.pdf#:~:text=,En%20este%20campo
 f = 1000 #CLP #https://www.latercera.com/pulso-pm/noticia/siete-veces-mas-caro-como-el-uso-de-agua-desalada-impacta-en-la-rentabilidad-de-los-proyectos-mineros/LWXUX4VEOZFWROZ5UQPOES4UTM
 
-A = []
+
+
+df_minas = pd.read_csv("MinasRecursos.csv") 
+
+A = {}
+for i, mineral in enumerate(df_minas["RECURSO"], start=1):
+    if "cobre" in mineral.lower():
+        A[i] = 11.5 * 3.154e+7
+    else:
+        A[i] = 1.2 * 3.154e+7
+
 a = []
 r = []
 delta = []
