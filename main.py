@@ -1,4 +1,4 @@
-from gurobipy import Model, GRB, quicksum, gp
+# from gurobipy import Model, GRB, quicksum, gp
 import pandas as pd
 
 
@@ -65,7 +65,20 @@ P = cargar_parametro_con_J(nombre_archivo,'TONELAJE_AUTORIZADO', J)
 v = cargar_parametro_con_J(nombre_archivo,'VOL_AUTORIZADO', J)
 e = []
 A = []
-d = []
+
+# https://www.sernageomin.cl/pdf/anuario/Anuario_de_la_mineria_de_chile_2023_web.pdf
+demanda_anual_kg = {
+    1: 5372694 * 1000,   # Cobre
+    2: 1262287,           # Plata
+    3: 35790,             # Oro
+    4: 44127 * 1000,      # Molibdeno
+    5: 5250584 * 1000,    # Caliza
+    6: 11443370 * 1000    # Hierro
+}
+
+demanda_mensual_kg = {l: demanda_anual_kg[l] / 12 for l in demanda_anual_kg}
+d = {(l, t): demanda_mensual_kg[l] for l in Mineral for t in Tiempo_meses} #Demanda por el mineral l en el periodo de tiempo t (kg)
+
 a = []
 b = 1200000000  #CLP https://www.dipres.gob.cl/597/articles-133289_doc_pdf.pdf
 r = []
@@ -79,7 +92,7 @@ q = []
 # ... (rellenar)
 
 ### Modelo
-
+'''
 m = gp.Model("Modelo_Proyecto_Minero")
 
 #### Variables (la naturaleza se define acá) (lb=lower bound, vtype=variable type)
@@ -127,3 +140,4 @@ m.addConstr(
 )
 # Cota máxima para los desechos acumulados.
 m.addConstrs(u[i,t] <= q[i] for i in Minas for t in Tiempo_meses)
+'''
