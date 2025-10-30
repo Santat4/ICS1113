@@ -50,8 +50,8 @@ def cargar_parametro_con_J(csv_filename, columnabuscada ,J_depositos):
 ### Conjuntos
 I =  157                            # Número de minas
 J = 310                             # Número de depósitos de relaves
-K = 0                              # Número de procesos mineros
-L = 15                              # Número de tipos de mineral 
+K = 4                               # Número de procesamiento mineros (Flotacion, Lixiviación, gravimetrico, Magnetico)
+L = 6                               # Número de tipos de mineral (oro, plata, cobre, caliza, molibdeno, Hierro)
 
 Minas = range(1, I+1)              # I
 Deposito_relaves = range(1, J+1)   # J
@@ -67,14 +67,14 @@ e = []
 A = []
 d = []
 a = []
-b = 0.0
+b = 1200000000  #CLP https://www.dipres.gob.cl/597/articles-133289_doc_pdf.pdf
 r = []
 delta = []
 f = []
 rho = []
-c = 0.0
+c = 0.00004 #CLP/(kg·m) https://www.argentina.gob.ar/sites/default/files/instructivo_simplificado-_mcc_web_v1_mayo_2019_dnptcyl.pdf#:~:text=Argentina,Costo%20por%20km
 g = []
-h = 0.0
+h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente es 923000000000) https://aqua-lac.org/index.php/Aqua-LAC/article/download/365/312
 q = []
 # ... (rellenar)
 
@@ -106,8 +106,8 @@ m.addConstrs(quicksum(y[i,j,t] for i in Minas for t in Tiempo_meses) <= P[j] for
 m.addConstrs(quicksum(y[i,j,t] * e[j] for i in Minas for t in Tiempo_meses) <= v[j] for j in Deposito_relaves)
 # Se tien que hacer una inspeccion anual en el deposito
 m.addConstrs(quicksum(V[j,t] for t in Tiempo_meses) == 1 for j in Deposito_relaves)
-# Se debe usar menos del 10% de agua continental producida
-m.addConstrs(quicksum(x[i,k,l,t] for i in Minas for k in Proceso_minero for l in Mineral) <= 0.1 * h for t in Tiempo_meses)
+# Se debe usar menos del 20% de agua continental producida
+m.addConstrs(quicksum(x[i,k,l,t] for i in Minas for k in Proceso_minero for l in Mineral) <= 0.2 * h for t in Tiempo_meses)
 # Cada mineral debe satisfacer una demanda
 m.addConstrs(quicksum(z[i,k,l,t] for i in Minas for k in Proceso_minero) >= d[l,t] for l in Mineral for t in Tiempo_meses)
 # Cada proceso minero necesita ocupar agua en cierta cantidad
@@ -123,7 +123,7 @@ m.addConstrs(u[i,0] == 0 for i in Minas)  # Condición inicial de relaves en min
 m.addConstr(
     quicksum(x[i,k,l,t] * f[k] for i in Minas for k in Proceso_minero for l in Mineral for t in Tiempo_meses) +
     quicksum(V[j,t] * delta[j] for j in Deposito_relaves for t in Tiempo_meses) +
-    c * (quicksum(g[i,j] for i in Minas for j in Deposito_relaves))
+    c * (quicksum(g[i,j] * y[i,j,t] for i in Minas for j in Deposito_relaves for t in Tiempo_meses))
     <= b
 )
 # Cota máxima para los desechos acumulados
