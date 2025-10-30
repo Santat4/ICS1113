@@ -63,8 +63,6 @@ Mineral = range(1, L+1)            # L
 nombre_archivo = "Filtradas activas inactivas.csv"
 P = cargar_parametro_con_J(nombre_archivo,'TONELAJE_AUTORIZADO', J)
 v = cargar_parametro_con_J(nombre_archivo,'VOL_AUTORIZADO', J)
-e = []
-A = []
 
 # https://www.sernageomin.cl/pdf/anuario/Anuario_de_la_mineria_de_chile_2023_web.pdf
 demanda_anual_kg = {
@@ -79,15 +77,18 @@ demanda_anual_kg = {
 demanda_mensual_kg = {l: demanda_anual_kg[l] / 12 for l in demanda_anual_kg}
 d = {(l, t): demanda_mensual_kg[l] for l in Mineral for t in Tiempo_meses} #Demanda por el mineral l en el periodo de tiempo t (kg)
 
-a = []
 b = 1200000000  #CLP https://www.dipres.gob.cl/597/articles-133289_doc_pdf.pdf
+c = 0.00004 #CLP/(kg·m) https://www.argentina.gob.ar/sites/default/files/instructivo_simplificado-_mcc_web_v1_mayo_2019_dnptcyl.pdf#:~:text=Argentina,Costo%20por%20km
+h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente es 923000000000) https://aqua-lac.org/index.php/Aqua-LAC/article/download/365/312
+
+e = []
+A = []
+a = []
 r = []
 delta = []
 f = []
 rho = []
-c = 0.00004 #CLP/(kg·m) https://www.argentina.gob.ar/sites/default/files/instructivo_simplificado-_mcc_web_v1_mayo_2019_dnptcyl.pdf#:~:text=Argentina,Costo%20por%20km
 g = []
-h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente es 923000000000) https://aqua-lac.org/index.php/Aqua-LAC/article/download/365/312
 q = []
 # ... (rellenar)
 
