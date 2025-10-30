@@ -94,7 +94,7 @@ for i, mineral in enumerate(df_minas["RECURSO"], start=1):
     else:
         A[i] = 1.2 * 3.154e+7
 
-a = []
+a = 0.00075 # Cambiar en restricciones para que no dependa del índice i
 r = []
 delta = []
 rho = []
