@@ -80,13 +80,13 @@ d = {(l, t): demanda_mensual_kg[l] for l in Mineral for t in Tiempo_meses} #Dema
 b = 1200000000  #CLP https://www.dipres.gob.cl/597/articles-133289_doc_pdf.pdf
 c = 0.00004 #CLP/(kg·m) https://www.argentina.gob.ar/sites/default/files/instructivo_simplificado-_mcc_web_v1_mayo_2019_dnptcyl.pdf#:~:text=Argentina,Costo%20por%20km
 h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente es 923000000000) https://aqua-lac.org/index.php/Aqua-LAC/article/download/365/312
+e = 0.00071 # https://www.sernageomin.cl/wp-content/uploads/2023/03/PÚBLICA_GeoquimicaRelavesChile23032023.pdf#:~:text=,En%20este%20campo
+f = 1000 #CLP #https://www.latercera.com/pulso-pm/noticia/siete-veces-mas-caro-como-el-uso-de-agua-desalada-impacta-en-la-rentabilidad-de-los-proyectos-mineros/LWXUX4VEOZFWROZ5UQPOES4UTM
 
-e = []
 A = []
 a = []
 r = []
 delta = []
-f = []
 rho = []
 g = []
 q = []
