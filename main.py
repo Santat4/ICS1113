@@ -90,6 +90,7 @@ Minas = range(1, I+1)              # I
 Deposito_relaves = range(1, J+1)   # J
 Proceso_minero = range(1, K+1)     # K
 Tiempo_meses = range(1, 13)        # T (horizonte de 12 meses)
+Tiempo_meses_cero = range(0, 13)
 Mineral = range(1, L+1)            # L
 
 ### Parámetros
@@ -163,9 +164,9 @@ m = Model("Modelo_Proyecto_Minero")
 x  = m.addVars(Minas, Proceso_minero, Mineral, Tiempo_meses, lb=0.0, vtype=GRB.CONTINUOUS, name="x")       # x_{iklt}
 y  = m.addVars(Minas, Deposito_relaves, Tiempo_meses, lb=0.0, vtype=GRB.CONTINUOUS, name="y")              # y_{ijt}
 z  = m.addVars(Minas, Proceso_minero, Mineral, Tiempo_meses,  lb=0.0, vtype=GRB.CONTINUOUS, name="z")      # z_{iklt}
-u  = m.addVars(Minas, Tiempo_meses, lb=0.0, vtype=GRB.CONTINUOUS, name="u")                                # u_{it}
+u  = m.addVars(Minas, Tiempo_meses_cero, lb=0.0, vtype=GRB.CONTINUOUS, name="u")                                # u_{it}
 w  = m.addVars(Deposito_relaves, vtype=GRB.BINARY, name="w")                                               # w_{j}
-V  = m.addVars(Proceso_minero, Tiempo_meses, vtype=GRB.BINARY, name="V")                                   # v_{jt}
+V  = m.addVars(Deposito_relaves, Tiempo_meses, vtype=GRB.BINARY, name="V")                                   # v_{jt}
 
 #### Función Objetivo
 m.setObjective(
