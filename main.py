@@ -124,6 +124,8 @@ p = 100000
 
 df_minas = pd.read_csv("MinasRecursos.csv") 
 
+
+#https://www.sonami.cl/v2/wp-content/uploads/2022/05/Agua-en-Mineria-2019-2020-VF.pdf
 A = {}
 for i, mineral in enumerate(df_minas["RECURSO"], start=1):
     if "cobre" in mineral.lower():
