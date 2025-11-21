@@ -117,7 +117,9 @@ c = 0.00004 #CLP/(kg·m) https://www.argentina.gob.ar/sites/default/files/instru
 h = 7691666666.67 # Agua continental disponible mensualmente en m^3 (anualmente es 923000000000) https://aqua-lac.org/index.php/Aqua-LAC/article/download/365/312
 e = 0.00071 # https://www.sernageomin.cl/wp-content/uploads/2023/03/PÚBLICA_GeoquimicaRelavesChile23032023.pdf#:~:text=,En%20este%20campo
 f = 1000 #CLP #https://www.latercera.com/pulso-pm/noticia/siete-veces-mas-caro-como-el-uso-de-agua-desalada-impacta-en-la-rentabilidad-de-los-proyectos-mineros/LWXUX4VEOZFWROZ5UQPOES4UTM
-
+n = 0.01
+o = 0.1
+p = 100000
 
 
 df_minas = pd.read_csv("MinasRecursos.csv") 
@@ -171,9 +173,9 @@ V  = m.addVars(Deposito_relaves, Tiempo_meses, vtype=GRB.BINARY, name="V")      
 
 #### Función Objetivo
 m.setObjective(
-    quicksum(x[i,k,j,t] for i in Minas for k in Proceso_minero for j in Mineral for t in Tiempo_meses) +
-    quicksum(y[i,j,t] for i in Minas for j in Deposito_relaves for t in Tiempo_meses) + 
-    quicksum(w[j] * r[j] for j in Deposito_relaves),
+    quicksum(n * x[i,k,j,t] for i in Minas for k in Proceso_minero for j in Mineral for t in Tiempo_meses) +
+    quicksum(o * y[i,j,t] for i in Minas for j in Deposito_relaves for t in Tiempo_meses) + 
+    quicksum(p * w[j] * r[j] for j in Deposito_relaves),
     GRB.MINIMIZE
 )
 
